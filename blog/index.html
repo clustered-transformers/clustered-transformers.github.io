@@ -1,0 +1,1043 @@
+<!--
+  Copyright 2018 The Distill Template Authors
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+       http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!doctype html>
+
+<head>
+    <script src="https://distill.pub/template.v2.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf8">
+    <script type="text/javascript">
+    window.MathJax = {
+        tex: {
+            inlineMath: [["$", "$"]],
+            displayMath: [["$*", "$*"]],
+            macros: {
+                bigO: ["\\mathcal{O}\\left(#1\\right)", 1],
+                softmax: ["\\operatorname{softmax}\\left(#1\\right)", 1],
+                fe: ["\\phi\\left(#1\\right)", 1],
+                R: ["\\mathbb{R}"],
+                norm: ["\\left\\|#1\\right\\|", 1]
+            }
+        }
+    }
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans|Roboto&display=swap" rel="stylesheet">
+
+
+<style>
+    @media (min-width: 300px) {
+        d-article table td{
+            font-size: 14px
+        }
+    }
+    @media (min-width: 300px) {
+        d-article table th{
+            font-size: 14px
+        }
+    }
+    #table-wrapper {
+      grid-column:text;
+      position:relative;
+    }
+    #table-scroll {
+      grid-column:text;
+      width:100%;
+      overflow:auto;  
+      margin-top:20px;
+    }
+    #image-scroll {
+      grid-column:page;
+      width:100%;
+      overflow:auto;  
+      margin-top:20px;
+    }
+    
+    #wrapper {
+        grid-column:text;
+        width:100%; 
+        margin:10px auto 10px auto; /*centers the div horizontally in all browsers (except IE)*/
+        background:#fff; 
+        text-align:center; /*resets text alignment from body tag */
+        border:1px solid #ccc;
+        border-top:none; 
+        padding:25px; 
+        position:relative;
+        /*Let's add some CSS3 styles, these will degrade gracefully in older browser and IE*/
+        border-radius:0 0 5px 5px;
+        -moz-border-radius:0 0 5px 5px;
+        -webkit-border-radius: 0 0 5px 5px; 
+    }
+
+    #lightbox {
+        position:fixed; /* keeps the lightbox window in the current viewport */
+        grid-column:page;
+        top:0; 
+        left:0; 
+        width:100%; 
+        height:100%; 
+        background:url(overlay.png) repeat; 
+       text-align:center;
+    }
+    #lightbox p {
+        text-align:right; 
+        color:#fff; 
+        margin-right:20px; 
+        font-size:12px; 
+    }
+    #lightbox img {
+        box-shadow:0 0 25px #111;
+        -webkit-box-shadow:0 0 25px #111;
+        -moz-box-shadow:0 0 25px #111;
+        width:100%;
+        max-width:900px;
+        padding:20px;
+        margin:10px;
+    }
+    
+    
+    /* 100% Image Width on Smaller Screens */
+    @media (max-width: 600px){
+        #lightbox img {
+            width: 100%;
+        }
+    }
+
+</style>
+
+
+<script src="https://code.jquery.com/jquery-1.6.2.min.js"></script>
+<script>
+    jQuery(document).ready(function($) {
+    	
+    	$('.lightbox_trigger').click(function(e) {
+    		
+    		//prevent default action (hyperlink)
+    		e.preventDefault();
+    		
+    		//Get clicked link href
+    		var image_src = $(this).attr("src");
+    		
+    		/* 	
+    		If the lightbox window HTML already exists in document, 
+    		change the img src to to match the href of whatever link was clicked
+    		
+    		If the lightbox window HTML doesn't exists, create it and insert it.
+    		(This will only happen the first time around)
+    		*/
+    		
+    		if ($('#lightbox').length > 0) { // #lightbox exists
+    			
+    			//place href as img src value
+    			$('#content').html('<img src="' + image_src + '" />');
+    		   	
+    			//show lightbox window - you could use .show('fast') for a transition
+    			$('#lightbox').show();
+    		}
+    		
+    		else { //#lightbox does not exist - create and insert (runs 1st time only)
+    			
+    			//create HTML markup for lightbox window
+    			var lightbox = 
+    			'<div id="lightbox">' +
+    				'<p>Click to close</p>' +
+    				'<div id="content">' + //insert clicked link's href into img src
+    					'<img src="' + image_src +'" />' +
+    				'</div>' +	
+    			'</div>';
+    				
+    			//insert lightbox HTML into page
+    			$('body').append(lightbox);
+    		}
+    		
+    	});
+    	
+    	//Click anywhere on the page to get rid of lightbox window
+    	$('#lightbox').live('click', function() { //must use live, as the lightbox element is inserted into the DOM
+    		$('#lightbox').hide();
+    	});
+    
+    });
+</script>
+</head>
+
+<body>
+    <d-front-matter>
+        <script type="text/json"> {
+            "title": "Fast Transformers with Clustering",
+            "description": "Fast Transformers with Clustering",
+            "published": "July 1, 2020",
+            "authors": [
+                {
+                    "author":"Apoorv Vyas",
+                    "authorURL":"https://www.idiap.ch/~avyas/",
+                    "affiliations": [
+                        {"name": "Idiap Research Institute", "url": "https://www.idiap.ch/en"},
+                        {"name": "EPFL", "url": "https://www.epfl.ch/en/"}
+                    ]
+                },
+                {
+                    "author":"Angelos Katharopoulos",
+                    "authorURL":"https://www.idiap.ch/~katharas/",
+                    "affiliations": [
+                        {"name": "Idiap Research Institute", "url": "https://www.idiap.ch/en"},
+                        {"name": "EPFL", "url": "https://www.epfl.ch/en/"}
+                    ]
+                },
+                {
+                    "author":"François Fleuret",
+                    "authorURL":"https://fleuret.org/francois/",
+                    "affiliations": [
+                        {"name": "Idiap Research Institute", "url": "https://www.idiap.ch/en"},
+                        {"name": "EPFL", "url": "https://www.epfl.ch/en/"}
+                    ]
+                }
+            ],
+            "katex": {
+                "delimiters": [
+                    {"left": "$$", "right": "$$", "display": false}
+                ]
+            }
+        }</script>
+    </d-front-matter>
+    <d-title>
+
+    </d-title>
+    <d-abstract>
+        <p>
+            Transformers have proven a successful model for a variety of tasks in
+            sequence modeling. However, computing the attention matrix, which
+            is their key component, has quadratic complexity with respect to
+            the sequence length, thus making them prohibitively expensive for
+            large sequences. To address this, we propose clustered attention,
+            which instead of computing the attention for every query, groups
+            queries into clusters and computes attention just for the
+            centroids. To further improve this approximation, we use the
+            computed clusters to identify the keys with the highest attention
+            per query and compute the exact key/query dot products. This
+            results in a model with linear complexity with respect to the
+            sequence length for a fixed number of clusters.
+        </p>
+    </d-abstract>
+
+    <d-byline></d-byline>
+
+    <d-article class="centered">
+        <p>
+            This blog presents a summary of our paper on scaling
+            transformers with clustering. For more details, kindly
+            read our paper <a href="https://idiap.ch/~avyas/pdfs/clustered-transformers.pdf">Fast Transformers with Clustered Attention</a>.
+        </p>
+	<p>
+	    For rest of the blog, for any matrix $M \in \R^{P \times Q}$, $M_i$
+	    denotes the $i$-th row of the matrix $M$.
+	</p>
+        <a class="marker" href="#section-1" id="section-1"><span>1</span></a>
+        <h2>Recap: Vanilla Self-Attention</h2>
+        <p>
+            We start with a brief recap of the vanilla self-attention introduced in
+            <d-cite key="vaswani2017attention"></d-cite>.
+            For any seqeunce of length $N$, given the  <em>queries</em> denoted
+            by $Q \in \R^{N \times D_k}$ and <em>keys</em> denoted by $K \in
+            \R^{N \times D_k}$,  we define the standard dot product attention
+            matrix $A \in \R^{N \times N}$ as:
+            $*
+                \begin{aligned}
+                    A = \softmax{\frac{Q K^T}{\sqrt{D_k}}}.
+                \end{aligned}
+            $*
+            Using the attention weights $A$ and the values $V \in \R^{N \times
+            D_v}$, we compute the new values $\hat{V}$ as follows:
+            $*
+                \begin{aligned}
+                    \hat{V} = A V.
+                \end{aligned}
+            $*
+	    Computing attention matrix $A$ requires $\bigO{N^2 D_k}$ operations
+	    and the new values $\hat{V}$ requires $\bigO{N^2 D_v}$ operations.
+	    This results in an asymptotic complexity of $\bigO{N^2 \max
+	    \left(D_k, D_v\right)}$.
+        </p>
+
+        <a class="marker" href="#section-2" id="section-2"><span>2</span></a>
+        <h2>Self-Attention Approximation</h2>
+        <p>
+            The main idea of this work is based on the relation showing that
+            queries close in Euclidean space have similar attention
+            distributions.
+        </p>
+        <p>
+            More precisely, given two queries $Q_i$ and $Q_j$ such that
+            $\norm{Q_i - Q_j}_2 \leq\epsilon$,
+            $*
+            \begin{equation}
+                \begin{aligned}
+                    \norm{\softmax{Q_i K^T} - \softmax{Q_j K^T}}_2 \leq
+                         \epsilon \norm{K}_2 \,,
+                \end{aligned}
+            \end{equation}
+            $*
+            where $\norm{K}_2$ denotes the spectral norm of $K$. 
+	    <!--
+	    This can be
+            proven using the property that  $\softmax{\cdot}$ has Lipschitz
+            constant less than 1
+            <d-cite key="gao2017properties"></d-cite>.
+            $*
+            \begin{equation}
+                \begin{aligned}
+                    & \norm{\softmax{Q_i K^T} - \softmax{Q_j K^T}}_2 \\
+                    & \quad \leq \norm{Q_i K^T - Q_j K^T}_2 \\
+                    & \quad \leq \epsilon \norm{K}_2
+                \end{aligned}
+            \end{equation}
+            $*
+	    -->
+        </p>
+
+        <a class="marker" href="#section-2.1" id="section-2.1"><span>2.1</span></a>
+        <h3>Clustered Self-Attention</h3>
+        <p>
+	        We exploit the above observation to improve the computational
+	        complexity of self-attention. To do so, we first cluster the
+	        queries into $C$ non-overlapping clusters.  The partitioning of
+	        queries into $C$ clusters is denoted by $S \in \{0,1\}^{N \times
+	        C}$ such that, $S_{ij} = 1$, if the $i$-th query $Q_i$ belongs to
+	        the $j$-th cluster and $0$ if it doesn't. We now compute
+	        attention weights $A^c \in \R^{C \times N}$ using the centroids
+	        instead of computing them for every query. Using the clustered
+	        attention $A^c$, we compute the new values $V^c \in \R^{C \times
+	        N}$.  Finally, we use the same attention weights and new values for
+	        queries that belong to same cluster.  In the following figure we
+	        show the different steps of clustered attention:
+        </p>
+
+       <figure style="grid-column: text;
+          display:inline-block;
+          margin-left:auto; margin-right:auto;
+          margin-top:0; margin-bottom:0;
+          position:relative;
+          text-align: center;" id="clustered">
+
+            <img class="lightbox_trigger"
+                src="figures/clustered.svg" 
+                style="width:100%; max-width:700px">
+            <figcaption>
+                 Flow-chart demonstrating the computation for clustered
+                 attention.  Different colors represent the query groups and the
+                 computed centroids. The same colors are then used to show the
+                 attention weights $A^c$, new values for the centroids
+                 $\hat{V}^c$, and the resulting values $\hat{V}$ after
+                 broadcasting. Since we compute the attention weights and new
+                 values using the $C$ centroids, the computational complexity is
+                 $\bigO{N C \max\left(D_k, D_v\right)}$.
+            </figcaption>
+        </figure>
+
+	<!--
+        <a class="marker" href="#section-2.1.1" id="section-2.1.1"><span>2.1.1</span></a>
+        <h4>Clustered Attention Complexity</h4>
+        <p>
+            For clustering, we use <em>Locality-Sensitive Hashing</em> (LSH) on
+            the queries followed by K-Means in Hamming space. This results in
+            an asymptotic complexity of $\bigO{N C L + C B L + N D_k B}$, where
+            $L$ is the number of Lloyd iterations and $B$ is the number of bits
+            used for hashing.
+        </p>
+        <p>
+            Attention computation and broadcasting operation have asymptotic
+            complexities of $\bigO{N C D_k + N C D_v}$ and $\bigO{N D_v}$
+            respectively. Thus, the overall complexity is dominated by the
+            attention computation i.e. $\bigO{N C \text{max}(D_k, D_v)}$
+        </p>
+	-->
+        <a class="marker" href="#section-2.2" id="section-2.2"><span>2.2</span></a>
+        <h3>Improved Clustered Attention</h3>
+	    <p>
+	        In this section, we will try to improve our clustered approximation
+	        of the vanilla attention. We start by assuming that for any query
+	        $Q_i$, we are given the $k$ keys with the highest attention
+	        weights.  Given these keys, one
+	        simple way to improve the clustered attention approximation is to
+	        recompute the attention on these keys and substitute the clustered
+	        attention weights on these keys with recomputed weights.  </p>
+	    <p>
+            However, we need to scale the recomputed attention so that the
+            total attention weight sums up to one. The scaling factor is the
+            total attention weight assigned by the clustered attention $A^c$ to
+            these $top$-$k$ keys.
+	    </p>
+	    <p>
+            Recomputing the attention as explained before always improves the
+            approximation (proof in the Appendix B in the paper).  For any
+            query $Q_i$ belonging to the cluster $j$, the set of $k$ keys with
+            highest attention weight in clustered attention $A^c_j$ is a good
+            candidate for the set of top-$k$ keys. 
+	    </p>
+        <p>
+	        More formally, for any query $Q_i$ belonging to the cluster $j$, we
+	        start by introducing $T \in \{0, 1\}^{C \times N}$, where $T_{ji} =
+	        1$ if the $i$-th key is among the $top$-$k$ keys for the $j$-th
+	        cluster and 0 otherwise. We can then compute the scaling factor
+	        denoted by $\hat{m}_j$ as the total attention weight on the $top$-$k$
+	        keys as follows:
+            $*
+                \begin{equation}
+                    \hat{m}_j = \sum_{i=1}^{N}T_{ji}A^c_{ji}.
+                \end{equation}
+            $*
+            Let us also denote the set of $k$ keys with the highest attention
+            weights in $A^c_j$ by $K^t_j$.  The updated attention weights
+            $A^u_i$ on these keys can be computed as follows:
+            $*
+                \begin{equation}
+                    A^u_i = \hat{m}_j \softmax{\frac{Q_i {K^t_j}^T}{\sqrt{D_k}}}
+                \end{equation}.
+            $*
+            <!--
+	        Therefore, the improved attention weights $A^t_i$ for $Q_i$ are given by:
+            $*
+                \begin{equation}
+                    A^t_{il} =
+                        \begin{cases}
+                            A^u_{il} & \text{if } T_{jl} = 1 \\
+                            A^c_{jl} & \text{otherwise}
+                        \end{cases}, \label{eq:improved_attention}
+                \end{equation}.
+            $*
+            -->
+        </p>
+        <p>
+            The new values, $\hat{V_i}$, can be efficiently computed using the
+            following decomposition:
+            $*
+                \begin{align}
+                   \hat{V_i} = \hat{V_i}^{t} + \hat{V_i}^{b}, \label{eq:improved_values_fast}
+                \end{align}
+            $*
+            where $\hat{V_i}^{t}$ is the weighted average of the values
+            corresponding to the $top$-$k$ keys with weights being the recomputed
+	        attention $A^u_i$. $\hat{V_i}^b$ is the weighted
+            average of the rest of the values with weights being the clustered
+            attention $A^c_j$.
+            <!--
+            The following equations show how we compute
+            $\hat{V}^t_i$ and $\hat{V}^b_i$,
+            $*
+            \begin{equation}
+               \hat{V}^{t}_{i} = \sum_{l=1}^{N}T_{jl} A^t_{il} V_l, \label{eq:improved_values_top}
+            \end{equation}
+            $*
+            $*
+            \begin{equation}
+               \hat{V}^{b}_{i} = \sum_{l=1}^{N}(1-T_{jl}) A^c_{jl} V_l, \label{eq:improved_values_bottom}
+            \end{equation}
+            $*
+            -->
+        </p>
+        <p>
+	        In the following figure, we show how we can efficiently compute
+	        $\hat{V_i}^t$ and $\hat{V_i}^{b}$ for a single query $Q_i$
+	        belonging to cluster $j$. For clarity, we denote the set of values
+	        corresponding to the $top$-$k$ keys by $V^t_j$.
+        </p>
+
+        <figure style="grid-column: text;
+            display:inline-block;
+            margin-left:auto; margin-right:auto;
+            margin-top:0; margin-bottom:10px;
+            position:relative;
+            text-align: center;" id="iclustered-top">
+            
+            <img class="lightbox_trigger"
+                src="figures/iclustered_vb.svg" 
+                style="width:100%; max-width:500px">
+            <figcaption>
+                Flow-chart demonstrating the efficient $\hat{V_i}^b$ computation
+                for a query $Q_i$ belonging to cluster $j$. Note that this is
+                exactly the same computation for clustered attention but with
+                attention weights corresponding to the $top$-$k$ keys masked
+                out. Thus this has a computation complexity of $\bigO{N C
+                \max\left(D_k, D_v\right)}$.
+            </figcaption>
+        </figure>
+
+        <figure style="grid-column: text;
+          display:inline-block;
+          margin-left:auto; margin-right:auto;
+          margin-top:10px; margin-bottom:0;
+          position:relative;
+          text-align: center;" id="iclustered-bottom">
+            <img class="lightbox_trigger"
+                src="figures/iclustered_vt.svg" 
+                style="width:100%; max-width:700px">
+            <figcaption>
+                Flow-chart demonstrating the efficient $\hat{V_i}^t$ computation
+                for a query $Q_i$ belonging to cluster $j$. Note that computing
+                $A^u_i$ requires a sparse dot product between the query $Q_i$
+                and the keys $K^t_j$. Similarly, computing $\hat{V}^t$ requires
+                weighted average of $V^t$. The overall computational complexity
+                is given by $\bigO{N k \max\left(D_k, D_v\right)}$.
+            </figcaption>
+        </figure>
+
+        <a class="marker" href="#section-2.3" id="section-2.3"><span>2.3</span></a>
+        <h3>Computational Complexity</h3>
+            <!--table style="grid-column: page; margin: 1rem 0; text-align: center;-->
+        <div id="table-wrapper">
+        <div id="table-scroll">
+            <table style="grid-column: text; width:100%; text-align: center; font-size: 13px;
+" >
+            <caption style="grid-column: text; width: 100%; text-align:center; caption-side:bottom; font-size: 13px;
+              font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, Arial, sans-serif;
+	          color: rgba(0, 0, 0, 0.6);
+	          line-height: 1.5em;
+		      padding: 10px;">
+		        Comparing computational complexities for the different
+		        attention variants. Note that in practice $C \lt\lt N$
+		        implying significant gains. Also, for $k \leq
+		        C$ improved clustered and clustered attention have same
+		        asymptotic complexities.
+            </caption>
+                <tr >
+                    <td></td>
+                    <td>Vanilla Attention</td>
+                    <td>Clustered Attention</td>
+                    <td>Improved Clustered Attention</td>
+                </tr>
+                <tr>
+                    <td>Memory</td>
+                    <td>$\bigO{N^2 \max\left(D_k, D_v\right)}$</td>
+                    <td>$\bigO{N C \max\left(D_k, D_v\right)}$</td>
+                    <td>$\bigO{N \max\left(C, k\right) \max\left(D_k, D_v\right)}$</td>
+                </tr>
+                <tr>
+                    <td>Time</td>
+                    <td>$\bigO{N^2 \max\left(D_k, D_v\right)}$</td>
+                    <td>$\bigO{N C \max\left(D_k, D_v\right)}$</td>
+                    <td>$\bigO{N \max\left(C, k\right) \max\left(D_k, D_v\right)}$</td>
+                </tr>
+            </table>
+        </div>
+        </div>
+
+        <!--a class="marker" href="#section-2.2.1" id="section-2.2.1"><span>2.2.1</span></a>
+        <h4>Improved Clustered Attention Complexity</h4>
+        <p>
+            Computing $\hat{V}^b$ involves same steps as clustered attention
+            but with attention weights corresponding to the $top$-$k$ keys
+            masked out. $\hat{V}^t$ computation involve two sparse dot products, one for
+            every query with the top-$k$ keys and one for the top-$k$ attention
+            weights with the corresponding values. This adds $\bigO{N k
+            \max\left(D_k, D_v\right)}$ to the overall asymptotic complexity.
+            When $k \leq C$, the asymptotic complexity is given by $\bigO{N C
+            \text{max}(D_k, D_v)}$.
+        </p-->
+
+        <a class="marker" href="#section-3" id="section-3"><span>3</span></a>
+        <h2>Experimental Results</h2>
+        <p>
+	        In the following, we evaluate the performance of our model
+	        with respect to its <a href="#section-3.1">computational requirements</a>,
+	        accuracy on the task of <a href="#section-3.2">Automatic Speech Recognition</a>
+	        ,and <a href="#section-3.3">approximation of pre-trained RoBERTa</a>
+            model on the
+                GLUE <d-cite key="wangsmhlb19"></d-cite> and SQuAD <d-cite
+                key="rajpurkar2018know"></d-cite> 
+	        benchmarks in Natural Language Processing.
+	    
+        </p>
+        <p>
+            We compare our model with the vanilla transformers
+            <d-cite key="vaswani2017attention"></d-cite>, which we refer
+            to as <b>full</b> and the Reformer <d-cite
+            key="kitaev2020reformer"></d-cite> with various rounds of
+            hashing, which we refer to as <b>lsh-X</b>, where $X$ denotes the
+            different rounds of hashing. Following the Reformer paper, we set
+            the number of buckets to $64$ and the chunk size to $32$. We refer
+            to clustered attention as <b>clustered-X</b> and to improved
+            clustered attention <b>i-clustered-X</b>, where $X$ denotes the
+            number of clusters. For all experiments we set $k$ to 32 for the
+            improved-clustered attention.
+        </p>
+        <a class="marker" href="#section-3.1" id="section-3.1"><span>3.1</span></a>
+        <h3>Time and Memory Benchmark</h3>
+        <p>
+            We compare the memory consumption and computation time on
+            artificially generated sequences of various lengths. For clustered
+            attention variants we use $100$ clusters.
+            For Reformer <d-cite key="kitaev2020reformer"></d-cite>, we
+            evaluate on two variants using $1$ and $4$ rounds of hashing.
+	    <!--
+	    All models consist of $1$ layer with $6$ attention heads, embedding
+	    dimension of $64$ for each head, and a feed-forward dimension of
+	    $1536$.
+	    -->
+        </p>
+        <p>
+            All methods other than vanilla transformers scale linearly with
+            respect to the sequence length.  Note that with respect to per
+            sample memory, both clustered and improved clustered attention
+            perform better than all other methods. It can be seen, that lsh-$1$
+            is faster than the improved clustered attention, however, Reformer
+            typically requires multiple hashing rounds to generalize. In contrast,
+            our clustered attention demonstrates good performance with 100 clusters
+            or less.
+        </p>
+
+        <figure style="grid-column: page;
+          display:inline-block;
+          margin-left:auto; margin-right:auto;
+          margin-top:0; margin-bottom:0;
+          position:relative;
+          text-align: center;" id="benchmark">
+                <figure style=" width:100%;
+                                padding: 0px; border: 0px;
+                                margin-top:0; margin-bottom:0;
+                                margin-inline-start: 0px;
+                                margin-inline-end: 0px;">
+                    <img src="figures/benchmark_label_64.svg"/>
+                </figure>
+                <figure id="time"
+                    style=" display:inline-block; width: 45%;
+                            padding: 0px; border: 0px;
+                            margin-top:0; margin-bottom:0;">
+                    <img src="figures/benchmark_time_64.svg"/>
+                    <!--figcaption> Per Element Time </figcaption-->
+                </figure>
+                <figure id="memory"
+                    style=" display:inline-block;
+                            width: 45%;
+                            padding: 0px; border: 0px;
+                            margin-top:0; margin-bottom:0;">
+
+                    <img src="figures/benchmark_memory_64.svg"/>
+                </figure>
+                <!--figcaption> Per Element Memory </figcaption-->
+                <figcaption style="width: 100%">
+                    Per element GPU time and memory consumption for a
+                    forward/backward pass. All models, except full, scale
+                    linearly with respect to the sequence length since they
+                    have constant time and memory per element.
+                </figcaption>
+        </figure>
+
+        <a class="marker" href="#section-3.2" id="section-3.2"><span>3.2</span></a>
+        <h3>Automatic Speech Recognition</h3>
+        <p>
+            In this experiment, we evaluate different transformer variants on
+            automatic speech recognition (ASR) using the Wall Street Journal
+            and Switchboard databases.
+        </p>
+        <!--h4> Convergence Behaviour</h4>
+        <p>
+            Below, we compare the required time per epoch as well as the total
+            training time. We also report the phone error rates (PER) / word
+            error rates (WER) on the test set for all transformer variants. We
+            observe that clustered attention is more than two times faster than
+            full (per epoch) and achieves significantly lower PER than both
+            Reformer variants (lsh-$1$ and lsh-$4$). Improved clustered is the
+            only method that is not only faster per epoch but also in total
+            wall-clock time required to converge.
+        </p>
+        <table>
+            <caption style="text-align:left; caption-side:bottom; font-size: 13px">
+                Comparing Phone Error Rate (PER), time per training epoch (in
+                seconds) and the wall-clock time required for the convergence
+                of each model (in hours) for Wall Street Journal database.
+            </caption>
+            <tr>
+                <td></td>
+                <td>full</td>
+                <td>lsh-1</td>
+                <td>lsh-4</td>
+                <td>clustered-100</td>
+                <td>i-clustered-100-32</td>
+            </tr>
+            <tr>
+                <td>PER (%)</td>
+                <td>5.03</td>
+                <td>9.43</td>
+                <td>8.59</td>
+                <td>7.50</td>
+                <td>5.61</td>
+            </tr>
+            <tr>
+                <td>Time/Epoch (s)</td>
+                <td>2514</td>
+                <td>1004</td>
+                <td>2320</td>
+                <td>803</td>
+                <td>1325</td>
+            </tr>
+            <tr>
+                <td>Convergence Time (h)</td>
+                <td>87.99</td>
+                <td>189.64</td>
+                <td>210.09</td>
+                <td>102.15</td>
+                <td>72.14</td>
+            </tr>
+        </table>
+
+        <table>
+            <caption style="text-align:left; caption-side:bottom; font-size: 13px">
+                Comparing Phone Error Rate (PER), time per training epoch (in
+                seconds) and the wall-clock time required for the convergence
+                of each model (in hours) for     Switchboard database.
+            </caption>
+            <tr>
+                <td></td>
+                <td>full</td>
+                <td>clustered-100</td>
+                <td>i-clustered-100</td>
+            </tr>
+            <tr>
+                <td>WER (%)</td>
+                <td>15.0</td>
+                <td>18.5</td>
+                <td>15.5</td>
+            </tr>
+            <tr>
+                <td>Time/Epoch (h)</td>
+                <td>3.84</td>
+                <td>1.91</td>
+                <td>2.57</td>
+            </tr>
+            <tr>
+                <td>Convergence Time (h)</td>
+                <td>228.05</td>
+                <td>132.13</td>
+                <td>127.44</td>
+            </tr>
+        </table-->
+
+        <h4> Speed Accuracy Trade-off</h4>
+        <p>
+            In this experiment, we compare different transformer variants under
+            an equalized computational budget.  We train each transformer
+            variant with varying capacities to get a range of the required
+            computation time and achieved <em>Phone Error Rate</em> (PER) or
+            <em>Word Error Rate</em> (WER).  In the figure below, we plot the
+            achieved PER/WER on the validation set with respect to the required
+            time to perform a full forward pass.  We observe that
+            improved clustered consistently achieves lower PER than all other
+            baselines for a given computational budget.
+        </p>
+
+        <figure style="grid-column: page;
+          display:inline-block;
+          margin-left:auto; margin-right:auto;
+          margin-top:0; margin-bottom:0;
+          position:relative;
+          text-align: center;" id="tradeoff">
+                <figure style=" width:75%;
+                                text-align: center;
+                                padding: 0px; border: 0px;
+                                margin-top:0; margin-bottom:0;
+                                margin-left:13%; margin-right:12%;">
+                    <img src="figures/plot_finetune_legend.svg"/>
+                </figure>
+                <figure id="wsj"
+                    style=" display:inline-block; width: 45%;
+                            padding: 0px; border: 0px;
+                            margin-top:0; margin-bottom:0;">
+                    <img src="figures/plot_finetune_wsj.svg"/>
+                    <figcaption > (a) Wall Street Journal </figcaption>
+                </figure>
+                <figure id="memory"
+                    style=" display:inline-block;
+                            width: 45%;
+                            padding: 0px; border: 0px;
+                            margin-top:0; margin-bottom:0;">
+                    <img src="figures/plot_finetune_swbd.svg"/>
+                <figcaption > (b) Switchboard </figcaption>
+                </figure>
+                <figcaption style="width: 100%">
+                    We compare the performance of various transformer
+                    models under an equalized computational budget. The numbers
+                    near the datapoints denote the number of layers and number
+                    of clusters or hashing rounds where applicable. Improved clustered
+                    is consistently better than all baselines for a given
+                    computational budget for both WSJ and Switchboard datasets.
+                </figcaption>
+        </figure>
+
+        <a class="marker" href="#section-3.3" id="section-3.3"><span>3.3</span></a>
+        <h3>RoBERTa Approximation</h3>
+        <p>
+            To highlight the ability of our clustered attention model to
+            approximate arbitrarily complicated attention distributions, we
+            evaluate our proposed method on the approximation of a fine-tuned
+            RoBERTa model <d-cite key="liu2019roberta"></d-cite> on the
+            GLUE <d-cite key="wangsmhlb19"></d-cite> and SQuAD <d-cite
+            key="rajpurkar2018know"></d-cite> benchmarks.
+        </p>
+        <p>
+            For the GLUE tasks, the maximum sequence length is 128 while for
+            SQuAD, it is 384. For each task, we use $25$ clusters for
+            approximation which is less than $20\%$ and $10\%$ of the input
+            sequence length for GLUE and SQuAD tasks respectively. In the table
+            below, we summarize the performance per task. We observe that
+            improved clustered performs as well as the full transformer in all
+            tasks but SQuAD, in which it is only marginally worse. Moreover, we
+            note that clustered performs significantly worse in tasks that
+            require more complicated attention patterns such as question
+            answering (SQuAD) and textual entailment (RTE).
+        </p>
+        <div id="table-wrapper">
+        <div id="table-scroll">
+            <table class="model_table" style="display:inline-block; margin: 0px auto;">
+            <thead>
+                <tr>
+                    <th align="center">Attention</th>
+                    <th align="center">CoLA</th>
+                    <th align="center">MNLI</th>
+                    <th align="center">MRPC</th>
+                    <th align="center">QNLI</th>
+                    <th align="center">QQP</th>
+                    <th align="center">RTE</th>
+                    <th align="center">SST-2</th>
+                    <th align="center">SST-B</th>
+                    <th align="center">WNLI</th>
+                    <th align="center">SQuAD</th>
+                </tr>
+            </thead>
+            
+            <tbody style="display: block">
+                <tr>
+                    <td align="center">full</td>
+                    <td align="center">0.601</td>
+                    <td align="center">0.880</td>
+                    <td align="center">0.868</td>
+                    <td align="center">0.929</td>
+                    <td align="center">0.915</td>
+                    <td align="center">0.682</td>
+                    <td align="center">0.947</td>
+                    <td align="center">0.900</td>
+                    <td align="center">0.437</td>
+                    <td align="center">0.904</td>
+                </tr>
+                <tr>
+                    <td align="center">clustered-25</td>
+                    <td align="center">0.598</td>
+                    <td align="center">0.794</td>
+                    <td align="center">0.436</td>
+                    <td align="center">0.746</td>
+                    <td align="center">0.894</td>
+                    <td align="center">0.498</td>
+                    <td align="center">0.944</td>
+                    <td align="center">0.789</td>
+                    <td align="center">0.437</td>
+                    <td align="center">0.006</td>
+                </tr>
+                <tr>
+                    <td align="center">i-clustered-25</td>
+                    <td align="center">0.601</td>
+                    <td align="center">0.880</td>
+                    <td align="center">0.873</td>
+                    <td align="center">0.930</td>
+                    <td align="center">0.915</td>
+                    <td align="center">0.704</td>
+                    <td align="center">0.947</td>
+                    <td align="center">0.900</td>
+                    <td align="center">0.437</td>
+                    <td align="center">0.876</td>
+                </tr>
+            </tbody>
+
+            <caption style="text-align:center;
+                            display: block;
+                            grid-column: text;
+                            width: 100%;
+                            caption-side:bottom;
+                            font-size: 13px;
+                            font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, Arial, sans-serif;
+	                        color: rgba(0, 0, 0, 0.6);
+	                        line-height: 1.5em;
+	                        padding: 10px">
+                Evaluating the approximation performance on GLUE and SQuAD
+                benchmarks.  We report accuracy for all tasks except STS-B and
+                SQuAD, where we report Pearson correlation and F1-score
+                respectively. For all metrics higher is better.
+            </caption>
+        </table>
+        </div>
+        </div>
+
+        <a class="marker" href="#section-3.4" id="section-3.4"><span>3.4</span></a>
+        <h3>Attention Patterns (Qualitative Comparison)</h3>
+        <p>
+	        In the figure below, we provide a qualitative comparison between
+	        the full attention, and the clustered attention variants used for
+	        approximation.  As described previously, we use $25$ clusters for
+	        both attention variants. For a randomly selected question-context
+	        tuple from SQuAD dataset, we show the attention distribution for
+	        the question tokens. It can be seen that with only few clusters,
+	        improved clustered approximates the full attention very closely
+	        even when the attention distribution has complicated and sparse
+	        patterns. In contrast, clustered attention fails to capture such
+	        an attention distribution during approximation.  Moreover, it can
+	        further be seen that for almost all question tokens, both full and
+	        improved clustered have the same tokens with the highest attention
+	        weights. Note that <em>CLS</em> token refers to the classification
+	        token appended before the questions.
+        </p>
+        <figure style="grid-column: text;
+          display:block;
+          margin-left:auto; margin-right:auto;
+          position:relative; text-align: center;" id="attention">
+            <div id="text" style="width: 100%;">
+                <p style="text-align:center; font-size:80%; font-family: Arial">
+                    Manning finished the year with a career-low 67.9 passer
+                    rating, throwing for 2,249 yards and nine touchdowns, with
+                    17 interceptions. In contrast, Osweiler threw for 1,967
+                    yards, 10 touchdowns and six interceptions for a rating of
+                    86.4. Veteran receiver
+                    <mark class="red">Demaryius Thomas</mark>
+                    led the team with 105 receptions for 1,304 yards and six
+                    touchdowns, while Emmanuel Sanders caught 76 passes for
+                    1,135 yards and six scores, while adding another 106 yards
+                    returning punts. Tight end Owen Daniels was also a big
+                    element of the passing game with 46 receptions for 517
+                    yards. Running back C. J. Anderson was the team's leading
+                    rusher 863 yards and seven touchdowns, while also catching
+                    25 passes for 183 yards. Running back Ronnie Hillman also
+                    made a big impact with 720 yards, five touchdowns, 24
+                    receptions, and a 4.7 yards per carry average. Overall, the
+                    offense ranked 19th in scoring with 355 points and did not
+                    have any Pro Bowl selections.
+                </p>
+                <caption> (a) Context </caption>
+            </div>
+            <div id="full" style="width: 100%;">
+                <figure id="full">
+                    <img src="figures/full_attention_plot_0_2_6.svg"/>
+                    <caption> (b) Full Attention </caption>
+                </figure>
+            </div>
+            <div id="iclustered" style="width: 100%;">
+                <figure id="memory">
+                    <img src="figures/improved_attention_plot_0_2_6.svg"/>
+                <caption> (c) Improved Clustered Attention </caption>
+            </div>
+            <div id="clustered" style="width: 100%;">
+                <figure id="memory">
+                    <img src="figures/clustered_attention_plot_0_2_6.svg"/>
+                <caption> (d) Clustered Attention </caption>
+            </div>
+            <div id="caption" style="width: 100%;">
+                <figcaption>
+		    Attention matrices for question-context tuples for
+		    <em>full</em> attention, and <em>clustered</em> and
+		    <em>i-clustered</em> attention used for approximation. (a)
+		    shows the context for the question with the answer
+		    highlighted.  (b) shows the attention distribution for
+		    <em>full</em>, (c) and (d) show the approximation using
+		    <em>i-clustered</em> and <em>clustered</em> attention
+		    respectively. Note that improved clustered attention
+		    patterns are very similar to full while clustered attention
+		    shows qualitatively different attention patterns. For each
+		    question token, we also present the tokens with highest
+		    attention on the right axis. Darker color represents higher
+		    attention weight.
+                </figcaption>
+            </div>
+        </figure>
+
+        <a class="marker" href="#section-4" id="section-4"><span>4</span></a>
+        <h2>Conclusions</h2>
+	<p>
+        We have presented <em>clustered attention</em> a method that
+        approximates vanilla transformers with significantly lower
+        computational requirements. In particular, we have shown that for a
+        given computational budget our model outperforms all other baselines.
+        In contrast to recent fast variations of transformers, we have also
+        shown that our method can efficiently approximate pre-trained models
+        with full attention while retaining the linear asymptotic complexity.
+	</p>
+	<p>
+	    The proposed method opens several research directions towards
+	    applying transformers on long sequence tasks such as music
+	    generation, scene flow estimation etc. We consider masked language
+	    modeling for long texts to be of particular importance, as it will
+	    allow finetuning for downstream tasks that need a context longer
+	    than the commonly used 512 tokens.
+	</p>
+    </d-article>
+    <d-article>
+
+    <d-appendix>
+        <h3>Acknowledgments</h3>
+        <p>
+            Apoorv Vyas was supported by the Swiss National Science Foundation
+            under grant number FNS-30213 "SHISSM". Angelos Katharopoulos was
+            supported by the Swiss National Science Foundation under grant
+            numbers FNS-30209 "ISUL" and FNS-30224 "CORTI".
+        </p>
+        <p>
+            The article template is provided by <a
+            href="https://distill.pub">distill.pub</a> and many formatting
+            styles are inspired from the articles appearing on Distill.
+        </p>
+        <d-footnote-list></d-footnote-list>
+        <!--d-citation-list></d-citation-list-->
+    </d-appendix>
+
+    <d-bibliography><script type="text/bibtex">
+            @inproceedings{vaswani2017attention,
+                title={Attention is all you need},
+                author={Vaswani, Ashish and Shazeer, Noam and Parmar, Niki and Uszkoreit, Jakob and Jones, Llion and Gomez, Aidan N and Kaiser, {\L}ukasz and Polosukhin, Illia},
+                booktitle={Advances in neural information processing systems},
+                url={https:\/\/papers.nips.cc/paper/7181-attention-is-all-you-need.pdf},
+                year={2017},
+            }
+            @misc{gao2017properties,
+                title={On the Properties of the Softmax Function with Application in Game Theory and Reinforcement Learning},
+                author={Bolin Gao and Lacra Pavel},
+                year={2017},
+                eprint={1704.00805},
+                archivePrefix={arXiv},
+                url={https:\/\/arxiv.org/pdf/1704.00805.pdf},
+                primaryClass={math.OC}
+            }
+            @inproceedings{kitaev2020reformer,
+                title={Reformer: The Efficient Transformer},
+                author={Nikita Kitaev and Lukasz Kaiser and Anselm Levskaya},
+                booktitle={International Conference on Learning Representations},
+                year={2020},
+                url={https:\/\/arxiv.org/pdf/2001.04451.pdf},
+            }
+            @article{liu2019roberta,
+                title={Roberta: A robustly optimized bert pretraining approach},
+                author={Liu, Yinhan and Ott, Myle and Goyal, Naman and Du, Jingfei and Joshi, Mandar and Chen, Danqi and Levy, Omer and Lewis, Mike and Zettlemoyer, Luke and Stoyanov, Veselin},
+                journal={arXiv preprint arXiv:1907.11692},
+                url={https:\/\/arxiv.org/pdf/1907.11692.pdf},
+                year={2019}
+            }
+            @inproceedings{wangsmhlb19,
+                author={Alex Wang and Amanpreet Singh and Julian Michael and Felix Hill and Omer Levy and Samuel R. Bowman},
+                title={GLUE: A Multi-Task Benchmark and Analysis Platform for Natural Language Understanding},
+                booktitle={International Conference on Learning Representations},
+		url={https:\/\/arxiv.org/pdf/1804.07461.pdf},
+                year={2019}
+	    }
+            @inproceedings{rajpurkar2018know,
+                title={Know What You Don’t Know: Unanswerable Questions for SQuAD},
+                author={Rajpurkar, Pranav and Jia, Robin and Liang, Percy},
+                booktitle={Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (Volume 2: Short Papers)},
+                url={https:\/\/arxiv.org/pdf/1806.03822.pdf},
+                year={2018}
+            }
+    </script></d-bibliography>
+</body>

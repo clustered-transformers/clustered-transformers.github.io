@@ -1,0 +1,105 @@
+<!Doctype html>
+<html>
+    <head>
+        <title>Clustered Transformers</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+
+        <link href="style.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+        <script type="text/javascript">
+            window.MathJax = {
+                tex: {
+                    inlineMath: [["$", "$"]],
+                    displayMath: [["$$", "$$"]],
+                    macros: {
+                        bigO: ["\\mathcal{O}\\left(#1\\right)", 1],
+                        softmax: ["\\operatorname{softmax}\\left(#1\\right)", 1],
+                        fe: ["\\phi\\left(#1\\right)", 1],
+						R: ["\mathbb{R}"]
+                    }
+                }
+            }
+        </script>
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+        <!--script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.0/dist/tf.min.js"></script-->
+        <!--script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm/dist/tf-backend-wasm.js"></script-->
+        <!--script src="demo.js"></script-->
+    </head>
+    <body>
+        <h1 class="project-title">
+            Fast Transformers with Clustered Attention
+        </h1>
+
+        <div class="authors">
+            <a href="https://idiap.ch/~avyas">
+                Apoorv Vyas<sup>1,2</sup>
+            </a>
+            <a href="https://idiap.ch/~katharas">
+                Angelos Katharopoulos<sup>1,2</sup>
+            </a>
+            <a href="https://fleuret.org/francois">
+                François Fleuret<sup>1,2</sup>
+            </a>
+        </div>
+        <div class="affiliations">
+            <span><sup>1</sup> Idiap Research Institute</span>
+            <span><sup>2</sup> École Polytechnique Fédérale de Lausanne</span>
+        </div>
+
+        <div class="project-conference">
+        </div>
+
+        <div class="project-icons">
+            <a href="https://idiap.ch/~avyas/pdfs/clustered-transformers.pdf">
+                <i class="fa fa-file"></i> <br/>
+                Paper
+            </a>
+            <a href="https://github.com/idiap/fast-transformers">
+                <i class="fa fa-github"></i> <br/>
+                Code
+            </a>
+			<a href="https://fast-transformers.github.io">
+                <i class="fa fa-book"></i> <br>
+                Docs
+            </a>
+			<a href="blog/index.html">
+                <i class="fa fa-newspaper-o"></i> <br>
+                Blog
+            </a>
+        </div>
+
+        <div class="abstract">
+            Transformers have been proven a successful model for a variety of
+            tasks in sequence modeling. However, computing the attention
+            matrix, which is their key component, has quadratic complexity with
+            respect to the sequence length, thus making them prohibitively
+            expensive for large sequences. To address this, we propose
+            <em>clustered attention</em>, which instead of computing the
+            attention for every query, groups queries into clusters and
+            computes attention just for the centroids. To further improve this
+            approximation, we use the computed clusters to identify the keys
+            with the highest attention per query and compute the exact
+            key/query dot products. This results in a model with linear
+            complexity with respect to the sequence length for a fixed number
+            of clusters.  We evaluate our approach on two automatic speech
+            recognition datasets and show that our model consistently
+            outperforms vanilla transformers for a given computational budget.
+            Finally, we demonstrate that our model can approximate arbitrarily
+            complex attention distributions with a minimal number of clusters
+            by approximating a pretrained BERT model on GLUE and SQuAD
+            benchmarks with only 25 clusters and no loss in performance.
+        </div>
+
+        <div class="section-title">Acknowledgements</div>
+        <div class="content">
+            <img src="imgs/SNF_RGB_F_POS.png"
+                 alt="SNSF logo"
+                 style="width: 100%; max-width: 300px; vertical-align: middle;" />
+            Angelos Katharopoulos and Apoorv Vyas are supported by <a
+            href="http://www.snf.ch/">SNSF</a> for their research.
+        </div>
+    </body>
+</html>
